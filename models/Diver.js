@@ -1,6 +1,7 @@
 const db = require('../config/connection');
 
 class Diver {
+    // GET methods
     // Query the DB for all the divers
     getAll() {
         return db.query(`SELECT * FROM divers ORDER BY last_name`);
@@ -22,6 +23,17 @@ class Diver {
             WHERE diver_id = $1
             GROUP BY diver_id`,
             [ id ]
+        );
+    }
+
+    // POST method
+    // Query the DB to add a new diver and return the new diver info (prepared statement)
+    create({ first_name, last_name, is_instructor, certification_id}) {
+        return db.query(
+            `INSERT INTO divers (first_name, last_name, is_instructor, certification_id)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *`,
+            [ first_name, last_name, is_instructor, certification_id ]
         );
     }
 }
