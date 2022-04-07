@@ -1,14 +1,19 @@
 DROP DATABASE IF EXISTS diving_db;
+
 CREATE DATABASE diving_db;
+
 \c diving_db;
+
 -- Below line creates a custom data type to use throughout the database schema
 CREATE DOMAIN UNSIGNED AS INTEGER CHECK (VALUE > 0);
+
 CREATE TABLE certifications (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     minimum_age UNSIGNED,
     required_hours UNSIGNED
 );
+
 CREATE TABLE divers (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -16,20 +21,24 @@ CREATE TABLE divers (
     is_instructor BOOLEAN DEFAULT FALSE NOT NULL,
     certification_id INTEGER REFERENCES certifications(id) ON DELETE SET NULL
 );
+
 CREATE DOMAIN LATLONG AS POINT
     CHECK (VALUE[0] BETWEEN -90 AND 90)
     CHECK (VALUE[1] BETWEEN -180 AND 180);
+
 CREATE TABLE locations (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     coordinates LATLONG NOT NULL
 );
+
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     location_id INTEGER NOT NULL REFERENCES locations(id) ON DELETE CASCADE,
     UNIQUE(name, location_id)
 );
+
 CREATE TABLE dives (
     id SERIAL PRIMARY KEY,
     depth NUMERIC(5, 2) NOT NULL,
@@ -38,6 +47,7 @@ CREATE TABLE dives (
     diver_id INTEGER NOT NULL REFERENCES divers(id) ON DELETE CASCADE,
     location_id INTEGER NOT NULL REFERENCES locations(id) ON DELETE CASCADE
 );
+
 -- Creates a function to use in the DB, function generates a random number
 CREATE FUNCTION random_between(low INT, high INT)
 RETURNS INT AS $$
@@ -45,3 +55,7 @@ BEGIN
     RETURN FLOOR(RANDOM() * (high - low + 1) + low);
 END;
 $$ LANGUAGE plpgsql;
+
+-- Creates indexes on the dives table
+CREATE INDEX diver_index ON dives (diver_id);
+CREATE INDEX location_index ON dives (location_id);
