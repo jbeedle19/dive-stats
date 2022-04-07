@@ -1,3 +1,4 @@
 const Dive = require('./Dive');
+const Diver = require('./Diver');
 
-module.exports = { Dive };
+module.exports = { Dive, Diver };
