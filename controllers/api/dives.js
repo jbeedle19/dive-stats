@@ -16,4 +16,13 @@ router.get('/stats', async (req, res) => {
     }
 });
 
+router.post('/', async (req, res) => {
+    try {
+        const { rows } = await Dive.create(req.body);
+        res.json(rows[0]);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
 module.exports = router;
